@@ -8,12 +8,10 @@ const HeroSection = () => {
   return (
     <section className="relative min-h-[85vh] flex items-center overflow-hidden">
       {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80')",
-        }}
+      <img
+        src={heroBg}
+        alt="Villa de luxe au Bénin"
+        className="absolute inset-0 w-full h-full object-cover"
       />
       {/* Gradient overlay */}
       <div className="absolute inset-0 gradient-hero" />
