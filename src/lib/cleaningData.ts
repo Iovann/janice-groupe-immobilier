@@ -16,6 +16,7 @@ export const CLEANING_SERVICES: CleaningService[] = [
     slug: "nettoyage-maison-villa",
     icon: "Home",
     badge: "Forfait disponible",
+    image: imgMaison,
     title: "Maisons & Villas",
     heroTitle: "Nettoyage de Maisons & Villas à Cotonou",
     heroAccroche:
