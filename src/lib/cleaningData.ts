@@ -2,6 +2,13 @@
 
 import type { CleaningService } from "@/types/cleaning";
 
+import imgMaison from "@/assets/cleaning/cleaning-maison.jpg";
+import imgBureaux from "@/assets/cleaning/cleaning-bureaux.jpg";
+import imgEcoles from "@/assets/cleaning/cleaning-ecoles.jpg";
+import imgTravaux from "@/assets/cleaning/cleaning-travaux.jpg";
+import imgEvenements from "@/assets/cleaning/cleaning-evenements.jpg";
+import imgEntretien from "@/assets/cleaning/cleaning-entretien.jpg";
+
 export const CLEANING_SERVICES: CleaningService[] = [
   /* ── 1. Maisons & Villas ──────────────────────── */
   {
