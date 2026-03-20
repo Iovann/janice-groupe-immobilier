@@ -55,25 +55,18 @@ const AnnoncesPage = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-card rounded-2xl shadow-card p-4 md:p-6 mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {/* Search */}
-          <div className="relative lg:col-span-2">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Rechercher..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              aria-label="Rechercher un bien"
-            />
-          </div>
-
+        <div className="bg-card rounded-2xl shadow-card p-4 md:p-6 mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* Offer type */}
           <select
             value={offerType ?? ""}
             onChange={(e) => updateFilter("type", e.target.value)}
-            className="w-full py-2.5 px-3 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full py-2.5 px-3 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none bg-no-repeat bg-right-4"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.75rem center',
+              backgroundSize: '1.5em 1.5em'
+            }}
             aria-label="Type d'offre"
           >
             <option value="">Louer / Vendre</option>
@@ -85,7 +78,13 @@ const AnnoncesPage = () => {
           <select
             value={category ?? ""}
             onChange={(e) => updateFilter("category", e.target.value)}
-            className="w-full py-2.5 px-3 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full py-2.5 px-3 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.75rem center',
+              backgroundSize: '1.5em 1.5em'
+            }}
             aria-label="Catégorie"
           >
             <option value="">Toutes catégories</option>
@@ -98,7 +97,13 @@ const AnnoncesPage = () => {
           <select
             value={district ?? ""}
             onChange={(e) => updateFilter("district", e.target.value)}
-            className="w-full py-2.5 px-3 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full py-2.5 px-3 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.75rem center',
+              backgroundSize: '1.5em 1.5em'
+            }}
             aria-label="Quartier"
           >
             <option value="">Tous quartiers</option>

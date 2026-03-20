@@ -1,4 +1,3 @@
-import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -12,6 +11,7 @@ import PropertyDetailPage from "./pages/PropertyDetailPage";
 import LocationPage from "./pages/LocationPage";
 import VentePage from "./pages/VentePage";
 import ContactPage from "./pages/ContactPage";
+import OpportunitiesPage from "./pages/OpportunitiesPage";
 import ServicesPage from "./pages/ServicesPage";
 import NettoyagePage from "./pages/NettoyagePage";
 import NettoyageDetailPage from "./pages/NettoyageDetailPage";
@@ -32,7 +32,6 @@ const ScrollToTop = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Sonner />
       <BrowserRouter>
         <ScrollToTop />
         <Navbar />
@@ -43,6 +42,7 @@ const App = () => (
           <Route path="/location" element={<LocationPage />} />
           <Route path="/vente" element={<VentePage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/opportunites" element={<OpportunitiesPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/nettoyage" element={<NettoyagePage />} />
           <Route path="/nettoyage/:slug" element={<NettoyageDetailPage />} />

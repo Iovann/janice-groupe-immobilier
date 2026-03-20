@@ -4,7 +4,6 @@ import { MOCK_PROPERTIES } from "@/lib/mockData";
 import { formatPrice } from "@/lib/utils";
 import { CATEGORY_LABELS, AGENCY } from "@/lib/constants";
 import PropertyCard from "@/components/properties/PropertyCard";
-import ContactForm from "@/components/forms/ContactForm";
 import { useState } from "react";
 
 /** Property detail page */
@@ -31,7 +30,7 @@ const PropertyDetailPage = () => {
   ).slice(0, 3);
 
   return (
-    <main className="section-padding">
+    <main className="section-padding ">
       <div className="container-custom">
         <Link to="/annonces" className="inline-flex items-center gap-2 text-secondary hover:text-primary transition-colors mb-6">
           <ArrowLeft size={18} />
@@ -140,13 +139,6 @@ const PropertyDetailPage = () => {
               </a>
             </div>
 
-            {/* Contact form */}
-            <div className="bg-card rounded-2xl shadow-card p-6">
-              <h3 className="font-heading font-semibold text-lg text-foreground mb-4">
-                Demander une visite
-              </h3>
-              <ContactForm propertyId={property.id} compact />
-            </div>
           </div>
         </div>
 

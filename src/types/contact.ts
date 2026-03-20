@@ -6,11 +6,4 @@ export interface ContactFormData {
   propertyId?: string;
 }
 
-export interface VisitRequestData {
-  name: string;
-  phone: string;
-  email: string;
-  preferredDate: string;
-  propertyId: string;
-  propertyTitle: string;
-}
+

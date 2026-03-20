@@ -25,7 +25,7 @@ const Index = () => {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "RealEstateAgent",
-            name: "GANDA Immobilier",
+            name: "Janice Groupe International Immobilier",
             telephone: "+229 97507052",
             address: {
               "@type": "PostalAddress",

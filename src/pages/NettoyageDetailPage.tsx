@@ -7,7 +7,6 @@ import {
 } from "lucide-react";
 import { CLEANING_SERVICES, getCleaningServiceBySlug } from "@/lib/cleaningData";
 import type { CleaningFormula } from "@/types/cleaning";
-import QuoteForm from "@/components/forms/QuoteForm";
 import { useEffect } from "react";
 
 /** Map icon name strings → Lucide components (covers all icons used in data) */
@@ -195,16 +194,7 @@ const NettoyageDetailPage = () => {
         </div>
       </section>
 
-      {/* ── 7. Quote form ──────────────────────── */}
-      <section id="devis" className="py-12 md:py-16 bg-muted scroll-mt-20">
-        <div className="container-custom max-w-2xl mx-auto">
-          <h2 className="font-heading text-2xl font-bold text-foreground mb-2 text-center">Demande de devis rapide</h2>
-          <p className="text-muted-foreground text-center mb-8">Remplissez le formulaire, nous vous répondons sous 24h.</p>
-          <div className="bg-card rounded-2xl border border-border p-6 md:p-8">
-            <QuoteForm serviceName={service.title} />
-          </div>
-        </div>
-      </section>
+
 
       {/* ── 8. Other services ──────────────────── */}
       <section className="py-12 md:py-16 bg-background">

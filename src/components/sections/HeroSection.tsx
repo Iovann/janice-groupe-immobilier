@@ -43,6 +43,12 @@ const HeroSection = () => {
               {HERO.CTA_PRIMARY}
             </Link>
             <Link
+              to="/opportunites"
+              className="bg-secondary text-secondary-foreground font-semibold text-base px-8 py-3.5 rounded-full hover:opacity-90 transition-opacity text-center"
+            >
+              Nos opportunités
+            </Link>
+            <Link
               to="/contact"
               className="border-2 border-primary-foreground/80 text-primary-foreground font-semibold text-base px-8 py-3.5 rounded-full hover:bg-primary-foreground/10 transition-colors text-center"
             >
