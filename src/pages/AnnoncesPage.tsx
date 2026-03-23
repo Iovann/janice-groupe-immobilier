@@ -2,10 +2,13 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, SearchX, AlertCircle } from "lucide-react"
 import { fetchPropertiesPaginated, fetchCategories, fetchUsedLocations } from "@/lib/api"
 import { useDebounce } from "@/hooks/useDebounce"
 import PropertyCard from "@/components/properties/PropertyCard"
+import { Autocomplete } from "@/components/ui/autocomplete"
+import { Loading } from "@/components/ui/loading"
+import { EmptyState } from "@/components/ui/empty-state"
 import type { OfferType, PropertyCategory, Property } from "@/types/property"
 
 interface AnnoncesPageProps {
@@ -14,6 +17,11 @@ interface AnnoncesPageProps {
   description?: string
   hideOfferTypeFilter?: boolean
   basePath?: string
+}
+
+interface District {
+  name: string
+  city: string
 }
 
 /** Annonces page with filters and property grid */
@@ -34,7 +42,7 @@ const AnnoncesPage = ({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dynamicCategories, setDynamicCategories] = useState<any[]>([])
-  const [dynamicDistricts, setDynamicDistricts] = useState<any[]>([])
+  const [dynamicDistricts, setDynamicDistricts] = useState<District[]>([])
   const [cities, setCities] = useState<string[]>([])
   const [selectedCity, setSelectedCity] = useState<string>("")
 
@@ -51,7 +59,12 @@ const AnnoncesPage = ({
   const city = searchParams?.get("city") || undefined
   const district = searchParams?.get("district") || undefined
 
-  const updateFilter = (key: string, value: string) => {
+  // Districts filtrés par ville sélectionnée
+  const filteredDistricts = city
+    ? dynamicDistricts.filter((d: any) => d.city === city)
+    : dynamicDistricts
+
+  const updateFilter = (key: string, value: string, additionalReset?: string[]) => {
     const params = new URLSearchParams(searchParams?.toString() ?? "")
     if (value) params.set(key, value)
     else params.delete(key)
@@ -63,6 +76,9 @@ const AnnoncesPage = ({
 
     // Reset to page 1 when filters change
     params.delete("page")
+
+    // Additional resets (e.g., reset district when city changes)
+    additionalReset?.forEach(k => params.delete(k))
 
     // Add forced offer type to params if needed
     if (forcedOfferType && key !== "offerType") {
@@ -76,27 +92,22 @@ const AnnoncesPage = ({
   useEffect(() => {
     async function loadFilters() {
       try {
-        const cats = await fetchCategories()
+        const [cats, locations] = await Promise.all([
+          fetchCategories(),
+          fetchUsedLocations(offerType)
+        ])
         setDynamicCategories(cats)
+        // Trier les quartiers par nom
+        const sortedDists = [...locations.districts].sort((a, b) => a.name.localeCompare(b.name))
+        setDynamicDistricts(sortedDists.length > 0 ? sortedDists : [])
+
+        // Extraire les villes uniques (déjà fournies par l'API)
+        setCities(locations.cities.sort())
       } catch (err) {
-        console.error("Error loading categories:", err)
+        console.error("Error loading categories or locations:", err)
       }
     }
     loadFilters()
-  }, [])
-
-  // Load available locations when offerType changes
-  useEffect(() => {
-    async function loadLocations() {
-      try {
-        const { cities, districts } = await fetchUsedLocations(offerType)
-        setAvailableCities(cities)
-        setAvailableDistricts(districts)
-      } catch (err) {
-        console.error("Error loading locations:", err)
-      }
-    }
-    loadLocations()
   }, [offerType])
 
   // Charger les propriétés avec pagination
@@ -108,8 +119,8 @@ const AnnoncesPage = ({
         const data = await fetchPropertiesPaginated({
           offerType: forcedOfferType || offerType,
           category,
-          city,
-          district,
+          district: district || undefined,
+          city: city || undefined,
           search: debouncedSearch,
           page: currentPage,
           pageSize: 12,
@@ -125,15 +136,7 @@ const AnnoncesPage = ({
       }
     }
     loadProperties()
-  }, [forcedOfferType, currentPage, category, city, district, debouncedSearch])
-
-  // Computed districts based on selected city
-  const filteredDistricts = useMemo(() => {
-    if (!city) return availableDistricts
-    return availableDistricts.filter(d => d.city === city)
-  }, [availableDistricts, city])
-
-
+  }, [forcedOfferType, currentPage, category, district, city, debouncedSearch, offerType])
 
   const goToPage = (page: number) => {
     const params = new URLSearchParams(searchParams?.toString() ?? "")
@@ -160,7 +163,7 @@ const AnnoncesPage = ({
             <select
               value={offerType ?? ""}
               onChange={(e) => updateFilter("offerType", e.target.value)}
-              className="w-full py-2.5 px-3 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none bg-no-repeat bg-right-4"
+              className="w-full py-2.5 px-3 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
                 backgroundRepeat: 'no-repeat',
@@ -193,60 +196,47 @@ const AnnoncesPage = ({
               <option key={cat.id} value={cat.slug}>{cat.name}</option>
             ))}
           </select>
-
           {/* City */}
-          <select
-            value={city ?? ""}
-            onChange={(e) => updateFilter("city", e.target.value)}
-            className="w-full py-2.5 px-3 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.75rem center',
-              backgroundSize: '1.5em 1.5em'
-            }}
-            aria-label="Commune"
-          >
-            <option value="">Toutes les communes</option>
-            {availableCities.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+          <Autocomplete
+            options={cities}
+            value={city || ""}
+            onChange={(value) => updateFilter("city", value, ["district"])}
+            placeholder="Toutes les villes"
+            ariaLabel="Ville"
+            noResultsMessage="Aucune annonce disponible pour cette ville"
+          />
 
           {/* District */}
-          <select
-            value={district ?? ""}
-            onChange={(e) => updateFilter("district", e.target.value)}
-            className="w-full py-2.5 px-3 pr-10 rounded-xl border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring appearance-none"
-            style={{
-              backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23666' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.75rem center',
-              backgroundSize: '1.5em 1.5em'
-            }}
-            aria-label="Quartier"
-          >
-            <option value="">Tous les quartiers</option>
-            {filteredDistricts.map((d) => (
-              <option key={d.name} value={d.name}>{d.name}</option>
-            ))}
-          </select>
+          <Autocomplete
+            options={filteredDistricts.map((d) => d.name)}
+            value={district || ""}
+            onChange={(value) => updateFilter("district", value)}
+            placeholder="Tous les quartiers"
+            ariaLabel="Quartier"
+            noResultsMessage="Aucune annonce disponible pour ce quartier"
+          />
         </div>
         {/* Results */}
         {loading ? (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">Chargement...</p>
+          <div className="py-16">
+            <Loading message="Chargement des annonces..." size="lg" />
           </div>
         ) : error ? (
-          <div className="text-center py-16">
-            <p className="text-destructive text-lg">{error}</p>
-          </div>
+          <EmptyState
+            icon={<AlertCircle size={40} />}
+            title="Une erreur est survenue"
+            description={error}
+          />
         ) : properties.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">
-              Aucun bien ne correspond à votre recherche.
-            </p>
-          </div>
+          <EmptyState
+            icon={<SearchX size={40} />}
+            title="Désolé, nous n'avons pas d'annonce disponible dans cette zone pour le moment"
+            description="Essayez d'élargir votre recherche ou contactez-nous pour être notifié des nouvelles opportunités."
+            action={{
+              label: "Réinitialiser les filtres",
+              onClick: () => router.push(basePath)
+            }}
+          />
         ) : (
           <>
             <p className="text-sm text-muted-foreground mb-6">
