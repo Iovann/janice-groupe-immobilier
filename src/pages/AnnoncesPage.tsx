@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ChevronLeft, ChevronRight, SearchX, AlertCircle } from "lucide-react"
-import { fetchPropertiesPaginated, fetchCategories, fetchUsedLocations } from "@/lib/api"
+import { fetchPropertiesPaginated, fetchUsedCategories, fetchUsedLocations } from "@/lib/api"
 import { useDebounce } from "@/hooks/useDebounce"
 import PropertyCard from "@/components/properties/PropertyCard"
 import { Autocomplete } from "@/components/ui/autocomplete"
@@ -44,11 +44,6 @@ const AnnoncesPage = ({
   const [dynamicCategories, setDynamicCategories] = useState<any[]>([])
   const [dynamicDistricts, setDynamicDistricts] = useState<District[]>([])
   const [cities, setCities] = useState<string[]>([])
-  const [selectedCity, setSelectedCity] = useState<string>("")
-
-  // New states for dynamic locations
-  const [availableCities, setAvailableCities] = useState<string[]>([])
-  const [availableDistricts, setAvailableDistricts] = useState<{name: string, city: string}[]>([])
 
   const search = searchParams?.get("search") ?? ""
   const debouncedSearch = useDebounce(search)
@@ -93,7 +88,7 @@ const AnnoncesPage = ({
     async function loadFilters() {
       try {
         const [cats, locations] = await Promise.all([
-          fetchCategories(),
+          fetchUsedCategories(offerType),
           fetchUsedLocations(offerType)
         ])
         setDynamicCategories(cats)
