@@ -1,5 +1,5 @@
-import AnnoncesPage from "@/pages/AnnoncesPage"
-import { Suspense } from "react"
+import AnnoncesPage from "@/views/AnnoncesPage";
+import { Suspense } from "react";
 
 export default function LocationPage() {
   return (
@@ -12,5 +12,5 @@ export default function LocationPage() {
         basePath="/location"
       />
     </Suspense>
-  )
+  );
 }

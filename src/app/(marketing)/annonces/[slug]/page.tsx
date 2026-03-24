@@ -1,3 +1,3 @@
-import PropertyDetailPage from "@/pages/PropertyDetailPage"
+import PropertyDetailPage from "@/views/PropertyDetailPage";
 
-export default PropertyDetailPage
+export default PropertyDetailPage;
