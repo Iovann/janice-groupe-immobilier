@@ -1,3 +1,3 @@
-import NettoyageDetailPage from "@/pages/NettoyageDetailPage"
+import NettoyageDetailPage from "@/views/NettoyageDetailPage";
 
-export default NettoyageDetailPage
+export default NettoyageDetailPage;

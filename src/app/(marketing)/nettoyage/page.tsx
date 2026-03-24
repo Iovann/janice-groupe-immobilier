@@ -1,3 +1,3 @@
-import NettoyagePage from "@/pages/NettoyagePage"
+import NettoyagePage from "@/views/NettoyagePage";
 
-export default NettoyagePage
+export default NettoyagePage;

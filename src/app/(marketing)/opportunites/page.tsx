@@ -1,3 +1,3 @@
-import OpportunitiesPage from "@/pages/OpportunitiesPage"
+import OpportunitiesPage from "@/views/OpportunitiesPage";
 
-export default OpportunitiesPage
+export default OpportunitiesPage;

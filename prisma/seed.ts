@@ -48,7 +48,7 @@ async function main() {
   const dataPath = path.join(process.cwd(), "decoupage_territorial_benin.json");
   const data = JSON.parse(fs.readFileSync(dataPath, "utf-8"));
 
-  const districtsToInsert = [];
+  const districtsToInsert: { name: string; city: string }[] = [];
 
   for (const dep of data) {
     for (const com of dep.communes) {

@@ -14,7 +14,8 @@ import { useSettings } from "@/context/SettingsContext"
 
 /** Property detail page */
 const PropertyDetailPage = () => {
-  const { slug } = useParams<{ slug: string }>()
+  const params = useParams()
+  const slug = params?.slug as string | undefined
   const { agency } = useSettings()
   const [property, setProperty] = useState<Property | null>(null)
   const [similar, setSimilar] = useState<Property[]>([])
