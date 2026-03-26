@@ -48,7 +48,7 @@ export function AutocompleteAsync({
       setLoading(true)
       try {
         const results = await searchFn(query)
-        setOptions(results)
+        setOptions(Array.from(new Set(results)))
       } catch {
         setOptions([])
       } finally {
