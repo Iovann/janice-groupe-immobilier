@@ -15,6 +15,7 @@ import {
 import type { Property } from "@/types/property";
 import { Autocomplete } from "@/components/ui/autocomplete";
 import { AutocompleteAsync } from "@/components/ui/autocomplete-async";
+import { FileDropzone } from "./FileDropzone";
 
 interface PropertyFormProps {
   id?: string;
@@ -49,7 +50,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
   const [activeTab, setActiveTab] = useState(0);
   const [isLoading, setIsLoading] = useState(!!id);
   const [isSaving, setIsSaving] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string; slug: string }[]>([]);
   const [dynamicCities, setDynamicCities] = useState<string[]>([]);
 
   // Form State
@@ -57,7 +58,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
     title: "",
     description: "",
     offerType: "louer",
-    category: "" as any,
+    category: "" as PropertyCategory,
     status: "active",
     isFeatured: false,
     price: 0,
@@ -65,15 +66,15 @@ export default function PropertyForm({ id }: PropertyFormProps) {
     location: "Bénin",
     city: "Cotonou",
     district: "",
-    coordinates: { lat: 6.3654, lng: 2.4183 } as any,
+    coordinates: { lat: 6.3654, lng: 2.4183 },
     bedrooms: 0,
     bathrooms: 0,
     isFurnished: false,
     amenities: [],
     images: [],
   });
-
   const [newPhotoUrl, setNewPhotoUrl] = useState("");
+
 
   useEffect(() => {
     async function init() {
@@ -117,7 +118,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
     init();
   }, [id, router, toast]);
 
-  const handleChange = (field: keyof Property, value: any) => {
+  const handleChange = (field: keyof Property, value: string | number | boolean | string[] | { lat: number; lng: number }) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -126,7 +127,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
     setFormData((prev) => ({
       ...prev,
       coordinates: {
-        ...(prev.coordinates as any),
+        ...(prev.coordinates as { lat: number, lng: number }),
         [field]: numValue,
       },
     }));
@@ -157,6 +158,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
     }));
     setNewPhotoUrl("");
   };
+
 
   const removePhoto = (index: number) => {
     setFormData((prev) => ({
@@ -209,7 +211,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
     setIsSaving(true);
     try {
       // Create slug if new
-      let payload = { ...formData };
+      const payload = { ...formData };
       if (!id && payload.title) {
         payload.slug =
           payload.title
@@ -295,8 +297,9 @@ export default function PropertyForm({ id }: PropertyFormProps) {
         {activeTab === 0 && (
           <div className="space-y-6 max-w-3xl animate-in fade-in duration-300">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Titre *</label>
+              <label htmlFor="property-title" className="text-sm font-medium">Titre *</label>
               <input
+                id="property-title"
                 type="text"
                 value={formData.title}
                 onChange={(e) => handleChange("title", e.target.value)}
@@ -309,12 +312,13 @@ export default function PropertyForm({ id }: PropertyFormProps) {
 
             <div className="space-y-2">
               <div className="flex justify-between">
-                <label className="text-sm font-medium">Description *</label>
+                <label htmlFor="property-description" className="text-sm font-medium">Description *</label>
                 <span className="text-xs text-muted-foreground">
                   {formData.description?.length || 0} caractères
                 </span>
               </div>
               <textarea
+                id="property-description"
                 value={formData.description}
                 onChange={(e) => handleChange("description", e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-input focus:ring-2 focus:ring-[#1A5276] outline-none transition-all min-h-[150px]"
@@ -439,7 +443,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
                   type="number"
                   value={formData.surface || ""}
                   onChange={(e) =>
-                    handleChange("surface", parseFloat(e.target.value))
+                    handleChange("surface", Number.parseFloat(e.target.value))
                   }
                   className="w-full px-4 py-2.5 rounded-xl border border-input focus:ring-2 focus:ring-[#1A5276] outline-none transition-all"
                   min={0}
@@ -491,7 +495,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
                 <input
                   type="number"
                   step="0.000001"
-                  value={(formData.coordinates as any)?.lat || ""}
+                  value={(formData.coordinates as { lat: number; lng: number })?.lat || ""}
                   onChange={(e) =>
                     handleCoordinatesChange("lat", e.target.value)
                   }
@@ -505,7 +509,7 @@ export default function PropertyForm({ id }: PropertyFormProps) {
                 <input
                   type="number"
                   step="0.000001"
-                  value={(formData.coordinates as any)?.lng || ""}
+                  value={(formData.coordinates as { lat: number; lng: number })?.lng || ""}
                   onChange={(e) =>
                     handleCoordinatesChange("lng", e.target.value)
                   }
@@ -607,36 +611,8 @@ export default function PropertyForm({ id }: PropertyFormProps) {
         {/* TAB 4 */}
         {activeTab === 3 && (
           <div className="space-y-8 animate-in fade-in duration-300">
-            <div className="max-w-xl space-y-4">
-              <label className="text-sm font-medium">
-                Ajouter une photo (URL)
-              </label>
-              <div className="flex gap-3">
-                <input
-                  type="url"
-                  value={newPhotoUrl}
-                  onChange={(e) => setNewPhotoUrl(e.target.value)}
-                  className="flex-1 px-4 py-2.5 rounded-xl border border-input focus:ring-2 focus:ring-[#1A5276] outline-none transition-all"
-                  placeholder="https://..."
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addPhoto();
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={addPhoto}
-                  disabled={!newPhotoUrl}
-                  className="bg-muted hover:bg-muted/80 text-foreground px-4 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50"
-                >
-                  Ajouter
-                </button>
-              </div>
-            </div>
-
-            {formData.images && formData.images.length > 0 ? (
+            {/* Galerie d'images existantes */}
+            {formData.images && formData.images.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 {formData.images.map((img, idx) => (
                   <div
@@ -675,18 +651,64 @@ export default function PropertyForm({ id }: PropertyFormProps) {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="border-2 border-dashed border-border rounded-2xl p-12 flex flex-col items-center justify-center text-muted-foreground">
-                <ImageIcon size={48} className="mb-4 opacity-50" />
-                <p>Aucune photo pour ce bien.</p>
-                <p className="text-sm mt-1">
-                  La première photo sera utilisée comme image principale.
-                </p>
-              </div>
             )}
+
+            {/* Zone d'ajout (Dropzone + URL) */}
+            <div className="max-w-2xl space-y-6">
+              <div className="space-y-3">
+                <label className="text-sm font-medium">
+                  {formData.images && formData.images.length > 0 ? "Ajouter d'autres photos" : "Télécharger des photos"}
+                </label>
+                <FileDropzone 
+                  onUploadComplete={(url) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      images: [...(prev.images || []), url],
+                    }));
+                  }}
+                />
+              </div>
+
+              <div className="relative py-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border"></span>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-white px-2 text-muted-foreground">OU</span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-muted-foreground">Ajouter via URL</label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={newPhotoUrl}
+                    onChange={(e) => setNewPhotoUrl(e.target.value)}
+                    className="flex-1 px-4 py-2 rounded-xl border border-input focus:ring-2 focus:ring-[#1A5276] outline-none transition-all text-sm"
+                    placeholder="https://..."
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addPhoto();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={addPhoto}
+                    disabled={!newPhotoUrl}
+                    className="bg-muted hover:bg-muted/80 text-foreground px-4 py-2 rounded-xl font-medium transition-colors disabled:opacity-50 text-sm border border-input"
+                  >
+                    Ajouter
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
+
 
       {/* Footer sticky */}
       <div className="border-t border-border bg-gray-50/80 backdrop-blur shrink-0 p-4 md:px-8 flex items-center justify-end gap-3 rounded-b-2xl">

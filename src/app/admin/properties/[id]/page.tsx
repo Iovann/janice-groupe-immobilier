@@ -2,7 +2,7 @@ import PropertyForm from "@/components/admin/form/PropertyForm"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-export default async function EditPropertyPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditPropertyPage({ params }: Readonly<{ params: Promise<{ id: string }> }>) {
   const { id } = await params
   
   return (
